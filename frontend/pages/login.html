@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VoluntApp</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: 
+                linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+                url("../assets/img/fondo.png") center center / cover no-repeat;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255,255,255,0.96);
+            border-radius: 18px;
+            padding: 45px 40px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .logo {
+            width: 180px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0b3d5c;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1b365d;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #f2b705;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+            background: #fff;
+        }
+
+        .form-group input:focus {
+            border-color: #156082;
+            box-shadow: 0 0 0 4px rgba(21, 96, 130, 0.08);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #f2b705;
+            color: #111;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        #mensaje {
+            margin-top: 18px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .register-text {
+            margin-top: 28px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .register-text a {
+            color: #0b3d5c;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+
+        .terms {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #7a7a7a;
+            line-height: 1.6;
+        }
+
+        .terms a {
+            color: #156082;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 35px 25px;
+            }
+
+            .welcome-text {
+                font-size: 18px;
+            }
+
+            .logo {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+
+        <img 
+            src="../assets/img/logo.png" 
+            alt="Logo VoluntApp" 
+            class="logo"
+        >
+
+        <div class="welcome-text">
+            ¡Bienvenido a la comunidad de Voluntarios más grande de Todos!
+        </div>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+                <label for="email">Usuario</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    placeholder="Ingrese su correo"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="Ingrese su contraseña"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="login-btn">
+                Iniciar Sesión
+            </button>
+
+            <p id="mensaje"></p>
+
+            <div class="register-text">
+                Haz clic aquí, si es que aún no formas parte de nosotros:
+                <a href="#">únetenos</a>
+            </div>
+
+            <div class="terms">
+                Al hacer clic, aceptas nuestros
+                <a href="#">Términos de Servicio</a>
+            </div>
+
+        </form>
+
+    </div>
+
+    <script src="../assets/js/login.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+const bienvenida = document.getElementById("bienvenida");
+const rolUsuario = document.getElementById("rolUsuario");
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (usuario) {
+    bienvenida.textContent = `Bienvenido, ${usuario.nombre}`;
+    rolUsuario.textContent = `Rol: ${usuario.rol}`;
+
+    if (usuario.rol === "admin") {
+        rolUsuario.textContent += " - Acceso completo";
+    } else {
+        rolUsuario.textContent += " - Acceso limitado";
+    }
+} else {
+    window.location.href = "login.html";
+}
+
+logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("usuario");
+    window.location.href = "login.html";
+});
