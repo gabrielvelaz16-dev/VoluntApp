@@ -149,3 +149,15 @@ app.delete('/voluntarios/:id', async (req, res) => {
         res.status(500).send(error.message);
     }
 });
+
+const campanasRoutes = require('./routes/campanas');
+app.use('/campanas', campanasRoutes);
+
+const actividadesRoutes = require('./routes/actividades');
+app.use('/actividades', actividadesRoutes);
+
+const inscripcionesRoutes = require('./routes/inscripciones');
+app.use('/inscripciones', inscripcionesRoutes);
+
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/dashboard', dashboardRoutes);
