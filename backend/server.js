@@ -29,31 +29,52 @@ app.get('/test-db', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+
+    const { login, password } = req.body;
 
     try {
+
         const result = await pool.query(
-            'SELECT * FROM usuario WHERE email = $1 AND password = $2',
-            [email, password]
+            `SELECT * FROM usuario
+             WHERE (email = $1 OR username = $1)
+             AND password = $2`,
+            [login, password]
         );
 
         if (result.rows.length > 0) {
+
+            const user = result.rows[0];
+
             res.json({
                 message: 'Login exitoso',
-                user: result.rows[0]
+                user: {
+                    id_usuario: user.id_usuario,
+                    nombre: user.nombre,
+                    username: user.username,
+                    email: user.email,
+                    rol: user.rol
+                }
             });
+
         } else {
+
             res.status(401).json({
                 message: 'Credenciales incorrectas'
             });
+
         }
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error en servidor');
-    }
-});
 
+        console.error(error);
+
+        res.status(500).json({
+            message: 'Error en servidor'
+        });
+
+    }
+
+});
 app.post('/voluntarios', async (req, res) => {
     const { nombre, telefono, direccion, id_usuario } = req.body;
 

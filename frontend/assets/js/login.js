@@ -4,7 +4,7 @@ const mensaje = document.getElementById("mensaje");
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
+    const login = document.getElementById("login").value.trim();
     const password = document.getElementById("password").value.trim();
 
     try {
@@ -13,7 +13,7 @@ form.addEventListener("submit", async (e) => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ login, password })
         });
 
         const data = await response.json();
@@ -24,16 +24,47 @@ form.addEventListener("submit", async (e) => {
 
             localStorage.setItem("usuario", JSON.stringify(data.user));
 
+            localStorage.setItem(
+                "rol",
+                data.user.rol
+            );
             setTimeout(() => {
-                window.location.href = "dashboard.html";
+
+                if (
+                    data.user.rol === "admin" ||
+                    data.user.rol === "coordinador"
+                ) {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                } else {
+
+                    window.location.href =
+                        "dashboard_voluntario.html";
+
+                }
+
             }, 800);
+
         } else {
-            mensaje.textContent = data.message || "Error al iniciar sesión";
+
+            mensaje.textContent =
+                data.message;
+
             mensaje.style.color = "red";
+
         }
+
     } catch (error) {
+
         console.error(error);
-        mensaje.textContent = "No se pudo conectar con el servidor";
+
+        mensaje.textContent =
+            "No se pudo conectar con el servidor";
+
         mensaje.style.color = "red";
+
     }
+
 });

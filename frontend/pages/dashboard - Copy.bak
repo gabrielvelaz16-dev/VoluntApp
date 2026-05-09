@@ -281,10 +281,10 @@
       <a href="#" class="active">Inicio</a>
       <a href="#" id="btnVoluntarios">Gestión de Voluntarios</a>
       <a href="#" id="btnCampanas">Campañas</a>
-      <a href="#" id="btnActividades">Actividades</a>
-      <a href="#" id="btnInscripciones">Inscripciones</a>
-      <a href="#"id="btnComentarios">Comentarios</a>
-      <a href="#"id="btnConfiguracion">Configuración</a>
+      <a href="#">Actividades</a>
+      <a href="#">Inscripciones</a>
+      <a href="#">Comentarios</a>
+      <a href="#">Configuración</a>
     </div>
 
   </aside>
@@ -294,34 +294,34 @@
     <section class="welcome">
       <h1 id="bienvenida">
         ¡Bienvenido Administrador!
-     </h1>
+      </h1>
 
       <p>
         Aquí puedes gestionar toda la plataforma.
       </p>
     </section>
 
-   <section class="cards">
+    <section class="cards">
 
-     <div class="card">
+      <div class="card">
         <h3>Voluntarios</h3>
-        <p id="totalVoluntarios">0</p>
+        <p>Administra voluntarios registrados.</p>
       </div>
 
       <div class="card">
-       <h3>Campañas</h3>
-       <p id="totalCampañas">0</p>
-     </div>
-
-      <div class="card">
         <h3>Actividades</h3>
-       <p id="totalActividades">0</p>
-     </div>
+        <p>Gestiona eventos y campañas.</p>
+      </div>
 
       <div class="card">
-       <h3>Inscripciones</h3>
-       <p id="totalInscripciones">0</p>
-     </div>
+        <h3>Inscripciones</h3>
+        <p>Control de participación.</p>
+      </div>
+
+      <div class="card">
+        <h3>Reportes</h3>
+        <p>Visualiza estadísticas generales.</p>
+      </div>
 
     </section>
 
@@ -399,92 +399,7 @@
 
 </div>
 
-<!-- MODAL ACTIVIDADES-->
-
-<div id="modalActividades" class="modal">
-
-  <div class="modal-content">
-
-    <span class="close-modal" id="cerrarModalActividades">&times;</span>
-
-    <h2>Gestión de Actividades</h2>
-    <p>Seleccione una opción:</p>
-
-    <div class="modal-buttons">
-
-      <button onclick="verActividades()">
-        Ver actividades
-      </button>
-
-      <button onclick="crearActividad()">
-        Crear actividad
-      </button>
-
-      <button onclick="eliminarActividad()">
-        Eliminar actividad
-      </button>
-
-    </div>
-
-    <div id="resultadoActividades"></div>
-
-  </div>
-
-</div>
-
-<!-- MODAL INSCRIPCIONES-->
-
-<div id="modalInscripciones" class="modal">
-
-  <div class="modal-content">
-
-    <span class="close-modal" id="cerrarModalInscripciones">&times;</span>
-
-    <h2>Gestión de Inscripciones</h2>
-    <p>Seleccione una opción:</p>
-
-    <div class="modal-buttons">
-
-      <button onclick="verInscripciones()">
-        Ver inscripciones
-      </button>
-
-      <button onclick="crearInscripcion()">
-        Inscribir voluntario
-      </button>
-
-      <button onclick="eliminarInscripcion()">
-        Cancelar inscripción
-      </button>
-
-    </div>
-
-    <div id="resultadoInscripciones"></div>
-
-  </div>
-
-</div>
-
 <script src="../assets/js/dashboard.js"></script>
-
-<script>
-async function cargarStats() {
-    try {
-        const res = await fetch('http://localhost:3000/dashboard/stats');
-        const data = await res.json();
-
-        document.getElementById('totalVoluntarios').innerText = data.voluntarios;
-        document.getElementById('totalCampañas').innerText = data.campañas;
-        document.getElementById('totalActividades').innerText = data.actividades;
-        document.getElementById('totalInscripciones').innerText = data.inscripciones;
-
-    } catch (error) {
-        console.error('Error cargando stats:', error);
-    }
-}
-
-cargarStats();
-</script>
 
 </body>
 </html>
