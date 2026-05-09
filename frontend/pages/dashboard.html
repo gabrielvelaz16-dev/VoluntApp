@@ -68,6 +68,36 @@
       align-items: center;
       gap: 18px;
     }
+    .notification-area {
+     position: relative;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+     background: #ef4444;
+      color: white;
+      font-size: 11px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: 700;
+    }
+
+    .role-box {
+      background: #e8f4f8;
+      color: #156082;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
 
     .user-box {
       display: flex;
@@ -251,18 +281,30 @@
     <h2>VoluntApp</h2>
   </div>
 
-  <nav class="top-menu">
-    <a href="#">Inicio</a>
-    <a href="#">Voluntarios</a>
-    <a href="#">Actividades</a>
-    <a href="#">Reportes</a>
-  </nav>
 
   <div class="user-area">
 
     <div class="user-box">
       <img src="../assets/img/boton.png" alt="Admin">
       <strong id="nombreUsuario">Admin</strong>
+    </div>
+
+    <div class="notification-area">
+
+      <span class="notification-icon"> 
+        🔔
+      </span>
+
+      <span class="notification-badge">
+        3
+      </span>
+
+    </div>
+
+    <div class="role-box">
+      <span id="rolUsuario">
+        Administrador
+      </span>
     </div>
 
     <button id="logoutBtn" class="logout-btn">
