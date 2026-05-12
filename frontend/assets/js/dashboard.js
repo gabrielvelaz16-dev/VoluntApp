@@ -20,6 +20,7 @@ logoutBtn.addEventListener("click", () => {
 
 const dynamicContent =
     document.getElementById("dynamicContent");
+    let usuarioEditando = null;
 
 const btnUsuarios =
     document.getElementById("btnUsuarios");
@@ -74,7 +75,10 @@ async function cargarModuloUsuarios() {
 
                     <td>
 
-                        <button class="btn-editar">
+                        <button
+                            class="btn-editar"
+                            onclick="editarUsuario(${v.id_usuario})"
+                        >
                             Editar
                         </button>
 
@@ -580,6 +584,61 @@ function abrirModalUsuario() {
 
 }
 
+async function editarUsuario(id) {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://localhost:3000/usuarios"
+            );
+
+        const usuarios =
+            await response.json();
+
+        const usuario =
+            usuarios.find(
+                u => u.id_usuario === id
+            );
+
+        if (!usuario) return;
+
+        usuarioEditando = id;
+
+        document.getElementById(
+            "nuevoNombre"
+        ).value = usuario.nombre;
+
+        document.getElementById(
+            "nuevoApellido"
+        ).value = usuario.apellido || "";
+
+        document.getElementById(
+            "nuevoUsername"
+        ).value = usuario.username;
+
+        document.getElementById(
+            "nuevoEmail"
+        ).value = usuario.email || "";
+
+        document.getElementById(
+            "nuevoPassword"
+        ).value = "";
+
+        document.getElementById(
+            "nuevoRol"
+        ).value = usuario.rol;
+
+        abrirModalUsuario();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
 function cerrarModalUsuario() {
 
     document
@@ -636,13 +695,25 @@ formNuevoUsuario.addEventListener(
 
         try {
 
+            const url = usuarioEditando
+
+                ? `http://localhost:3000/usuarios/${usuarioEditando}`
+
+                : "http://localhost:3000/usuarios";
+
+            const method = usuarioEditando
+
+                ? "PUT"
+
+                : "POST";
+
             const response = await fetch(
 
-                "http://localhost:3000/usuarios",
+                url,
 
                 {
 
-                    method: "POST",
+                    method,
 
                     headers: {
                         "Content-Type":
@@ -669,6 +740,8 @@ formNuevoUsuario.addEventListener(
                 cerrarModalUsuario();
 
                 formNuevoUsuario.reset();
+
+                usuarioEditando = null;
 
                 cargarModuloUsuarios();
 

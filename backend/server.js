@@ -401,6 +401,67 @@ app.post('/usuarios', async (req, res) => {
 });
 
 
+app.put('/usuarios/:id', async (req, res) => {
+
+    const { id } = req.params;
+
+    const {
+        nombre,
+        apellido,
+        email,
+        password,
+        rol
+    } = req.body;
+
+    try {
+
+        await pool.query(
+
+            `UPDATE usuario
+
+             SET
+                nombre = $1,
+                apellido = $2,
+                email = $3,
+                password = $4,
+                rol = $5
+
+             WHERE id_usuario = $6`,
+
+            [
+                nombre,
+                apellido,
+                email,
+                password,
+                rol,
+                id
+            ]
+
+        );
+
+        res.json({
+
+            message:
+                'Usuario actualizado'
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            message:
+                'Error actualizando usuario'
+
+        });
+
+    }
+
+});
+
+
 // =============================
 // RUTAS EXTERNAS
 // =============================
