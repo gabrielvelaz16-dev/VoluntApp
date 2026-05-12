@@ -209,19 +209,6 @@
 
     /* MODAL */
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.45);
-      justify-content: center;
-      align-items: center;
-    }
-
     .modal-content {
       background: white;
       width: 90%;
@@ -270,6 +257,189 @@
       padding-top: 20px;
       border-top: 1px solid #e5e7eb;
     }
+
+    .usuarios-module {
+    background: white;
+    margin-top: 30px;
+    padding: 25px;
+    border-radius: 20px;
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.module-header h2 {
+    color: #156082;
+}
+
+.btn-add {
+    background: #f4b400;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.usuarios-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.usuarios-table th {
+    background: #156082;
+    color: white;
+    padding: 14px;
+    text-align: left;
+}
+
+.usuarios-table td {
+    padding: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.btn-editar {
+    background: #156082;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.btn-eliminar {
+    background: #d9534f;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-estado {
+    background: #f4b400;
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+
+.filters-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    margin-top: 15px;
+}
+
+.filters-container input,
+.filters-container select {
+
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.modal {
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-content {
+
+    background: white;
+
+    width: 600px;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+}
+
+.modal-header {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+.close-modal {
+
+    font-size: 28px;
+    cursor: pointer;
+
+}
+
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+
+}
+
+.form-grid input,
+.form-grid select {
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ddd;
+
+}
+
+.btn-save {
+
+    margin-top: 25px;
+
+    width: 100%;
+
+    background: #f4b400;
+
+    border: none;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+</style>
   </style>
 </head>
 <body>
@@ -321,7 +491,7 @@
 
     <div class="sidebar-menu">
       <a href="#" class="active">Inicio</a>
-      <a href="#" id="btnVoluntarios">Gestión de Voluntarios</a>
+      <a href="#" id="btnUsuarios">Gestión de Usuarios</a>
       <a href="#" id="btnCampanas">Campañas</a>
       <a href="#" id="btnActividades">Actividades</a>
       <a href="#" id="btnInscripciones">Inscripciones</a>
@@ -367,13 +537,118 @@
 
     </section>
 
+    <div id="dynamicContent"></div>
+
+
+      <!-- MODAL NUEVO USUARIO -->
+
+      <div
+          id="modalUsuario"
+          class="modal hidden"
+      >
+
+          <div class="modal-content">
+
+              <div class="modal-header">
+
+                  <h2>
+                      Nuevo Usuario
+                  </h2>
+
+                  <span
+                      class="close-modal"
+                      onclick="cerrarModalUsuario()"
+                  >
+                      ×
+                  </span>
+
+              </div>
+
+              <form id="formNuevoUsuario">
+
+                  <div class="form-grid">
+
+                      <input
+                          type="text"
+                          id="nuevoNombre"
+                          placeholder="Nombre"
+                          required
+                      >
+
+                      <input
+                          type="text"
+                          id="nuevoApellido"
+                          placeholder="Apellido"
+                          required
+                      >
+
+                      <input
+                          type="text"
+                          id="nuevoUsername"
+                          placeholder="Username"
+                          required
+                      >
+
+                      <input
+                          type="email"
+                          id="nuevoEmail"
+                          placeholder="Correo"
+                          required
+                      >
+
+                      <input
+                          type="password"
+                          id="nuevoPassword"
+                          placeholder="Contraseña"
+                          required
+                      >
+
+                      <select
+                          id="nuevoRol"
+                          required
+                      >
+
+                          <option value="">
+                              Seleccionar rol
+                          </option>
+
+                          <option value="admin">
+                              Administrador
+                          </option>
+
+                          <option value="coordinador">
+                              Coordinador
+                          </option>
+
+                          <option value="voluntario">
+                              Voluntario
+                          </option>
+
+                      </select>
+
+                  </div>
+
+                  <button
+                      type="submit"
+                      class="btn-save"
+                  >
+                      Crear Usuario
+                  </button>
+
+              </form>
+
+          </div>
+
+      </div>
+
+
   </main>
 
 </div>
 
 <!-- MODAL VOLUNTARIOS-->
 
-<div id="modalVoluntarios" class="modal">
+<div id="modalVoluntarios" class="modal hidden">
 
   <div class="modal-content">
 
@@ -410,7 +685,7 @@
 
 <!-- MODAL CAMPAÑAS-->
 
-<div id="modalCampanas" class="modal">
+<div id="modalCampanas" class="modal hidden">
 
   <div class="modal-content">
 
@@ -443,7 +718,7 @@
 
 <!-- MODAL ACTIVIDADES-->
 
-<div id="modalActividades" class="modal">
+<div id="modalActividades" class="modal hidden">
 
   <div class="modal-content">
 
@@ -476,7 +751,7 @@
 
 <!-- MODAL INSCRIPCIONES-->
 
-<div id="modalInscripciones" class="modal">
+<div id="modalInscripciones" class="modal hidden">
 
   <div class="modal-content">
 
@@ -527,6 +802,7 @@ async function cargarStats() {
 
 cargarStats();
 </script>
+
 
 </body>
 </html>

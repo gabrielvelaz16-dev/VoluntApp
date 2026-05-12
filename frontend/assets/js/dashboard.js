@@ -18,117 +18,332 @@ logoutBtn.addEventListener("click", () => {
     window.location.href = "login.html";
 });
 
-/* MODAL */
+const dynamicContent =
+    document.getElementById("dynamicContent");
 
-const modal = document.getElementById("modalVoluntarios");
-const btnVoluntarios = document.getElementById("btnVoluntarios");
-const cerrarModal = document.getElementById("cerrarModal");
-const resultado = document.getElementById("resultadoVoluntarios");
+const btnUsuarios =
+    document.getElementById("btnUsuarios");
 
-if (btnVoluntarios) {
-    btnVoluntarios.addEventListener("click", (e) => {
+if (btnUsuarios) {
+
+    btnUsuarios.addEventListener("click", (e) => {
+
         e.preventDefault();
-        modal.style.display = "flex";
+
+        cargarModuloUsuarios();
+
     });
+
 }
-
-cerrarModal.addEventListener("click", () => {
-    modal.style.display = "none";
-});
-
-window.addEventListener("click", (e) => {
-    if (e.target === modal) {
-        modal.style.display = "none";
-    }
-});
 
 
 /* FUNCIONES */
 
-async function verVoluntarios() {
+async function cargarModuloUsuarios() {
+
     try {
-        const response = await fetch("http://localhost:3000/voluntarios");
+
+        const response =
+            await fetch("http://localhost:3000/usuarios");
+
         const data = await response.json();
 
-        let html = "<h3>Lista de Voluntarios</h3>";
+        let filas = "";
 
         data.forEach(v => {
-            html += `
-                <p>
-                    <strong>ID:</strong> ${v.id_voluntario}
-                    |
-                    <strong>Nombre:</strong> ${v.nombre}
-                    |
-                    <strong>Teléfono:</strong> ${v.telefono}
-                </p>
+
+            filas += `
+
+                <tr>
+
+                    <td>
+                        ${v.nombre} ${v.apellido || ""}
+                    </td>
+
+                    <td>
+                        ${v.username}
+                    </td>
+
+                    <td>
+                        ${v.rol}
+                    </td>
+
+                    <td>
+                        ${v.estado}
+                    </td>
+
+                    <td>
+
+                        <button class="btn-editar">
+                            Editar
+                        </button>
+
+                        <button
+                            class="btn-estado"
+                            onclick="cambiarEstado(${v.id_usuario}, '${v.estado}')"
+                        >
+
+                            ${v.estado === 'activo'
+                                ? 'Desactivar'
+                                : 'Activar'}
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
             `;
+
         });
 
-        resultado.innerHTML = html;
+        dynamicContent.innerHTML = `
+
+            <div class="usuarios-module">
+
+                <div class="module-header">
+
+                    <h2>
+                        Gestión de Usuarios
+                    </h2>
+
+                    <button
+                        class="btn-add"
+                        onclick="abrirModalUsuario()"
+                    >
+                        + Nuevo Usuario
+                    </button>
+                    
+
+                </div>
+
+                <div class="filters-container">
+
+                    <input
+                        type="text"
+                        id="buscarUsuario"
+                        placeholder="Buscar usuario..."
+                    >
+
+                    <select id="filtroEstado">
+
+                        <option value="todos">
+                            Todos los estados
+                        </option>
+
+                        <option value="activo">
+                            Activos
+                        </option>
+
+                        <option value="inactivo">
+                            Inactivos
+                        </option>
+
+                    </select>
+
+                    <select id="filtroRol">
+
+                        <option value="todos">
+                            Todos los roles
+                        </option>
+
+                        <option value="admin">
+                            Admin
+                        </option>
+
+                        <option value="coordinador">
+                            Coordinador
+                        </option>
+
+                        <option value="voluntario">
+                            Voluntario
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <table class="usuarios-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nombre</th>
+                            <th>Username</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${filas}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+      const buscarUsuario =
+     document.getElementById("buscarUsuario");
+
+     const filtroEstado =
+     document.getElementById("filtroEstado");
+
+     const filtroRol =
+     document.getElementById("filtroRol");
+
+     buscarUsuario.addEventListener(
+       "input",
+        aplicarFiltros
+        );
+
+       filtroEstado.addEventListener(
+       "change",
+         aplicarFiltros
+          );
+
+         filtroRol.addEventListener(
+          "change",
+           aplicarFiltros
+           );
 
     } catch (error) {
-        resultado.innerHTML = "Error al cargar voluntarios";
+
+        console.error(error);
+
+        dynamicContent.innerHTML = `
+            <p>Error cargando usuarios</p>
+        `;
+
     }
+
 }
 
-async function agregarVoluntario() {
-    const nombre = prompt("Ingrese nombre:");
-    const telefono = prompt("Ingrese teléfono:");
-    const direccion = prompt("Ingrese dirección:");
+async function cambiarEstado(id, estadoActual) {
 
-    if (!nombre || !telefono || !direccion) {
-        alert("Complete todos los campos");
-        return;
-    }
+    const nuevoEstado =
+        estadoActual === 'activo'
+        ? 'inactivo'
+        : 'activo';
 
     try {
-        const response = await fetch("http://localhost:3000/voluntarios", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre,
-                telefono,
-                direccion,
-                id_usuario: 1
-            })
-        });
 
-        const data = await response.json();
-        alert(data.message);
-        verVoluntarios();
+        await fetch(
 
-    } catch (error) {
-        alert("Error al agregar voluntario");
-    }
-}
+            `http://localhost:3000/usuarios/${id}/estado`,
 
-async function eliminarVoluntario() {
-    const id = prompt("Ingrese ID a eliminar:");
+            {
 
-    if (!id) return;
+                method: 'PUT',
 
-    try {
-        const response = await fetch(`http://localhost:3000/voluntarios/${id}`, {
-            method: "DELETE"
-        });
+                headers: {
+                    'Content-Type': 'application/json'
+                },
 
-        const data = await response.json();
-        alert(data.message);
-        verVoluntarios();
+                body: JSON.stringify({
+                    estado: nuevoEstado
+                })
+
+            }
+
+        );
+
+        cargarModuloUsuarios();
 
     } catch (error) {
-        alert("Error al eliminar");
+
+        console.error(error);
+
+        alert('Error cambiando estado');
+
     }
+
 }
 
-function verEliminados() {
-    resultado.innerHTML = `
-        <h3>Voluntarios Eliminados</h3>
-        <p>Aquí luego conectaremos historial de eliminados.</p>
-    `;
+
+
+function aplicarFiltros() {
+
+    const texto =
+        document.getElementById("buscarUsuario")
+        .value
+        .toLowerCase();
+
+    const estado =
+        document.getElementById("filtroEstado")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const rol =
+        document.getElementById("filtroRol")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filas =
+        document.querySelectorAll(
+            ".usuarios-table tbody tr"
+        );
+
+    filas.forEach(fila => {
+
+        const nombre =
+            fila.children[0]
+            .textContent
+            .toLowerCase();
+
+       const rolFila =
+            fila.children[2]
+            .textContent
+            .toLowerCase()
+            .trim();
+
+        const estadoFila =
+            fila.children[3]
+            .textContent
+            .toLowerCase()
+            .trim();
+
+        const coincideTexto =
+            nombre.includes(texto);
+
+        const coincideEstado =
+            estado === "todos" ||
+            estadoFila === estado;
+
+        const coincideRol =
+            rol === "todos" ||
+            rolFila === rol;
+
+        if (
+            coincideTexto &&
+            coincideEstado &&
+            coincideRol
+        ) {
+
+            fila.style.display = "";
+
+        } else {
+
+            fila.style.display = "none";
+
+        }
+
+    });
+
 }
+
+cargarModuloUsuarios();
+
 
 /* =========================
    MODAL CAMPAÑAS
@@ -355,4 +570,126 @@ async function eliminarInscripcion() {
 
     verInscripciones();
 }
+
+function abrirModalUsuario() {
+
+    document
+        .getElementById("modalUsuario")
+        .classList
+        .remove("hidden");
+
+}
+
+function cerrarModalUsuario() {
+
+    document
+        .getElementById("modalUsuario")
+        .classList
+        .add("hidden");
+
+}
+
+const formNuevoUsuario =
+    document.getElementById(
+        "formNuevoUsuario"
+    );
+
+formNuevoUsuario.addEventListener(
+    "submit",
+    async (e) => {
+
+        e.preventDefault();
+
+        const nuevoUsuario = {
+
+            nombre:
+                document.getElementById(
+                    "nuevoNombre"
+                ).value,
+
+            apellido:
+                document.getElementById(
+                    "nuevoApellido"
+                ).value,
+
+            username:
+                document.getElementById(
+                    "nuevoUsername"
+                ).value,
+
+            email:
+                document.getElementById(
+                    "nuevoEmail"
+                ).value,
+
+            password:
+                document.getElementById(
+                    "nuevoPassword"
+                ).value,
+
+            rol:
+                document.getElementById(
+                    "nuevoRol"
+                ).value
+
+        };
+
+        try {
+
+            const response = await fetch(
+
+                "http://localhost:3000/usuarios",
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify(
+                        nuevoUsuario
+                    )
+
+                }
+
+            );
+
+            const data =
+                await response.json();
+
+            if (response.ok) {
+
+                alert(
+                    "Usuario creado correctamente"
+                );
+
+                cerrarModalUsuario();
+
+                formNuevoUsuario.reset();
+
+                cargarModuloUsuarios();
+
+            } else {
+
+                alert(
+                    data.message
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Error creando usuario"
+            );
+
+        }
+
+    }
+);
 
