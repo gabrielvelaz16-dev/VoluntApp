@@ -54,7 +54,37 @@ form.addEventListener("submit", async (e) => {
 
             mensaje.style.color = "red";
 
+            if (
+                data.message ===
+                "Tu cuenta está desactivada"
+            ) {
+
+                mensaje.innerHTML = `
+
+                    Tu cuenta está desactivada.<br><br>
+
+                    <button
+                        id="btnSolicitarActivacion"
+                    >
+                        Solicitar activación
+                    </button>
+
+                `;
+
+                const btn =
+                    document.getElementById(
+                        "btnSolicitarActivacion"
+                    );
+
+                btn.addEventListener(
+                    "click",
+                    solicitarActivacion
+                );
+
+            }
+
         }
+
 
     } catch (error) {
 
@@ -68,3 +98,11 @@ form.addEventListener("submit", async (e) => {
     }
 
 });
+
+async function solicitarActivacion() {
+
+    alert(
+        "Solicitud enviada correctamente"
+    );
+
+}

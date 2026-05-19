@@ -6,13 +6,13 @@ const pool = require('../db');
 router.get('/stats', async (req, res) => {
     try {
         const voluntarios = await pool.query('SELECT COUNT(*) FROM voluntario');
-        const campañas = await pool.query('SELECT COUNT(*) FROM campaña');
+        const campanas = await pool.query('SELECT COUNT(*) FROM campana');
         const actividades = await pool.query('SELECT COUNT(*) FROM actividad');
         const inscripciones = await pool.query('SELECT COUNT(*) FROM inscripcion');
 
         res.json({
             voluntarios: parseInt(voluntarios.rows[0].count),
-            campañas: parseInt(campañas.rows[0].count),
+            campanas: parseInt(campanas.rows[0].count),
             actividades: parseInt(actividades.rows[0].count),
             inscripciones: parseInt(inscripciones.rows[0].count)
         });

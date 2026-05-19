@@ -490,7 +490,13 @@
   <aside class="sidebar">
 
     <div class="sidebar-menu">
-      <a href="#" class="active">Inicio</a>
+      <a
+          href="#"
+          class="active"
+          id="btnInicio"
+      >
+          Inicio
+      </a>
       <a href="#" id="btnUsuarios">Gestión de Usuarios</a>
       <a href="#" id="btnCampanas">Campañas</a>
       <a href="#" id="btnActividades">Actividades</a>
@@ -522,7 +528,7 @@
 
       <div class="card">
        <h3>Campañas</h3>
-       <p id="totalCampañas">0</p>
+       <p id="totalCampanas">0</p>
      </div>
 
       <div class="card">
@@ -551,7 +557,7 @@
 
               <div class="modal-header">
 
-                  <h2>
+                  <h2 id="tituloModalUsuario">
                       Nuevo Usuario
                   </h2>
 
@@ -600,37 +606,47 @@
                           type="password"
                           id="nuevoPassword"
                           placeholder="Contraseña"
-                          required
                       >
+
+                      <div class="restore-password">
+
+                          <label>
+
+                              <input
+                                  type="checkbox"
+                                  id="checkRestaurarPassword"
+                              >
+
+                              Restaurar contraseña
+
+                          </label>
+
+                      </div>
+
+                      <div
+                          id="containerNuevaPassword"
+                          class="hidden"
+                      >
+
+                          <input
+                              type="password"
+                              id="nuevaPasswordEdit"
+                              placeholder="Nueva contraseña"
+                          >
+
+                      </div>
 
                       <select
                           id="nuevoRol"
                           required
                       >
-
-                          <option value="">
-                              Seleccionar rol
-                          </option>
-
-                          <option value="admin">
-                              Administrador
-                          </option>
-
-                          <option value="coordinador">
-                              Coordinador
-                          </option>
-
-                          <option value="voluntario">
-                              Voluntario
-                          </option>
-
                       </select>
-
                   </div>
 
                   <button
                       type="submit"
                       class="btn-save"
+                      id="btnGuardarUsuario"
                   >
                       Crear Usuario
                   </button>
@@ -641,8 +657,198 @@
 
       </div>
 
+      <!-- MODAL CAMPAÑA -->
+
+      <div
+          id="modalCampana"
+          class="modal hidden"
+      >
+
+          <div class="modal-content">
+
+              <div class="modal-header">
+
+                  <h2 id="tituloModalCampana">
+                      Nueva Campaña
+                  </h2>
+
+                  <span
+                      class="close-modal"
+                      onclick="cerrarModalCampana()"
+                  >
+                      ×
+                  </span>
+
+              </div>
+
+              <form id="formCampana">
+
+                  <div class="form-grid">
+
+                      <input
+                          type="text"
+                          id="campanaNombre"
+                          placeholder="Nombre de campaña"
+                          required
+                      >
+
+                      <select
+                          id="campanaResponsable"
+                          required
+                      >
+                      </select>
+
+                      <textarea
+                          id="campanaDescripcion"
+                          placeholder="Descripción"
+                          required
+                      ></textarea>
+
+                      <select
+                          id="campanaEstado"
+                      >
+
+                          <option value="activa">
+                              Activa
+                          </option>
+
+                          <option value="finalizada">
+                              Finalizada
+                          </option>
+
+                      </select>
+
+                      <input
+                          type="date"
+                          id="campanaFechaInicio"
+                          required
+                      >
+
+                      <input
+                          type="date"
+                          id="campanaFechaFin"
+                          required
+                      >
+
+                  </div>
+
+                  <button
+                      type="submit"
+                      class="btn-save"
+                      id="btnGuardarCampana"
+                  >
+                      Crear Campaña
+                  </button>
+
+              </form>
+
+          </div>
+
+      </div>
 
   </main>
+
+</div>
+
+<!-- MODAL ACTIVIDAD -->
+
+<div
+    id="modalActividad"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="tituloModalActividad">
+                Nueva Actividad
+            </h2>
+
+            <span
+                class="close-modal"
+                onclick="cerrarModalActividad()"
+            >
+                ×
+            </span>
+
+        </div>
+
+        <form id="formActividad">
+
+            <div class="form-grid">
+
+                <input
+                    type="text"
+                    id="actividadNombre"
+                    placeholder="Nombre actividad"
+                    required
+                >
+
+                <select
+                    id="actividadCampana"
+                    required
+                >
+                </select>
+
+                <textarea
+                    id="actividadDescripcion"
+                    placeholder="Descripción"
+                    required
+                ></textarea>
+
+                <input
+                    type="text"
+                    id="actividadUbicacion"
+                    placeholder="Ubicación"
+                    required
+                >
+
+                <input
+                    type="date"
+                    id="actividadFecha"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="actividadCupos"
+                    placeholder="Cupos"
+                    required
+                >
+
+                <select
+                    id="actividadEstado"
+                    required
+                >
+
+                  <option value="pendiente">
+                      Pendiente
+                  </option>
+
+                  <option value="en_curso">
+                      En Curso
+                  </option>
+
+                  <option value="finalizada">
+                      Finalizada
+                  </option>
+
+                </select>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn-save"
+                id="btnGuardarActividad"
+            >
+                Crear Actividad
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
 

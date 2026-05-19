@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `INSERT INTO campaña (nombre, descripcion, fecha_inicio, fecha_fin, responsable)
+            `INSERT INTO campana (nombre, descripcion, fecha_inicio, fecha_fin, responsable)
              VALUES ($1, $2, $3, $4, $5)
              RETURNING *`,
             [nombre, descripcion, fecha_inicio, fecha_fin, responsable]
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 
         res.json({
             message: "Campaña creada",
-            campaña: result.rows[0]
+            campana: result.rows[0]
         });
 
     } catch (error) {
@@ -27,10 +27,10 @@ router.post('/', async (req, res) => {
 // ✅ LISTAR CAMPAÑAS
 router.get('/', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM campaña ORDER BY id_campaña DESC');
+        const result = await pool.query('SELECT * FROM campana ORDER BY id_campana DESC');
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener campañas" });
+        res.status(500).json({ error: "Error al obtener campanas" });
     }
 });
 
@@ -40,18 +40,18 @@ router.get('/:id', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT * FROM campaña WHERE id_campaña = $1',
+            'SELECT * FROM campana WHERE id_campana = $1',
             [id]
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Campaña no encontrada" });
+            return res.status(404).json({ message: "Campana no encontrada" });
         }
 
         res.json(result.rows[0]);
 
     } catch (error) {
-        res.status(500).json({ error: "Error al buscar campaña" });
+        res.status(500).json({ error: "Error al buscar campana" });
     }
 });
 
@@ -62,16 +62,16 @@ router.put('/:id', async (req, res) => {
 
     try {
         await pool.query(
-            `UPDATE campaña
+            `UPDATE campana
              SET nombre=$1, descripcion=$2, fecha_inicio=$3, fecha_fin=$4, estado=$5, responsable=$6
-             WHERE id_campaña=$7`,
+             WHERE id_campana=$7`,
             [nombre, descripcion, fecha_inicio, fecha_fin, estado, responsable, id]
         );
 
-        res.json({ message: "Campaña actualizada" });
+        res.json({ message: "Campana actualizada" });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al actualizar campaña" });
+        res.status(500).json({ error: "Error al actualizar campana" });
     }
 });
 
@@ -81,14 +81,14 @@ router.delete('/:id', async (req, res) => {
 
     try {
         await pool.query(
-            'DELETE FROM campaña WHERE id_campaña = $1',
+            'DELETE FROM campana WHERE id_campana = $1',
             [id]
         );
 
-        res.json({ message: "Campaña eliminada" });
+        res.json({ message: "Campana eliminada" });
 
     } catch (error) {
-        res.status(500).json({ error: "Error al eliminar campaña" });
+        res.status(500).json({ error: "Error al eliminar campana" });
     }
 });
 

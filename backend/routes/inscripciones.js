@@ -55,12 +55,12 @@ router.get('/', async (req, res) => {
             SELECT i.id_inscripcion,
                    v.nombre AS voluntario,
                    a.nombre AS actividad,
-                   c.nombre AS campaña,
+                   c.nombre AS campana,
                    i.fecha_inscripcion
             FROM inscripcion i
             JOIN voluntario v ON i.id_voluntario = v.id_voluntario
             JOIN actividad a ON i.id_actividad = a.id_actividad
-            LEFT JOIN campaña c ON a.id_campaña = c.id_campaña
+            LEFT JOIN campana c ON a.id_campana = c.id_campana
             ORDER BY i.id_inscripcion DESC
         `);
 
