@@ -59,6 +59,43 @@ router.post('/', async (req, res) => {
 
         }
 
+        // =========================
+        // CONFIGURACION SISTEMA
+        // =========================
+
+        const configDB =
+            await pool.query(
+
+                `SELECT *
+                FROM configuracion_sistema
+                LIMIT 1`
+
+            );
+
+        const config =
+            configDB.rows[0];
+
+        if (cupos > config.cupos_default) {
+
+            return res.status(400).json({
+
+                message:
+                    `No se permiten más de ${config.cupos_default} cupos`
+
+            });
+
+        }
+
+
+        const cuposFinal =
+
+            cupos && cupos > 0
+
+            ? cupos
+
+            : config.cupos_default;
+
+
         const result = await pool.query(
 
             `INSERT INTO actividad (
@@ -84,7 +121,7 @@ router.post('/', async (req, res) => {
                 descripcion,
                 fecha,
                 ubicacion,
-                cupos,
+                cuposFinal,
                 estado,
                 id_campana,
                 id_usuario_creador
@@ -105,6 +142,7 @@ router.post('/', async (req, res) => {
 
     } catch (error) {
 
+        console.error("ERROR ACTIVIDAD:");
         console.error(error);
 
         res.status(500).json({
@@ -127,9 +165,18 @@ router.get('/', async (req, res) => {
 
     try {
 
-        const result = await pool.query(
+        const configDB =
+            await pool.query(
+                `SELECT *
+                 FROM configuracion_sistema
+                 LIMIT 1`
+            );
 
-            `
+        const config =
+            configDB.rows[0];
+
+        let query = `
+
             SELECT
 
                 a.*,
@@ -146,10 +193,22 @@ router.get('/', async (req, res) => {
             LEFT JOIN usuario u
             ON a.id_usuario_creador = u.id_usuario
 
-            ORDER BY a.id_actividad DESC
-            `
+        `;
 
-        );
+        if (!config.mostrar_finalizadas) {
+
+            query += `
+                WHERE a.estado <> 'finalizada'
+            `;
+
+        }
+
+        query += `
+            ORDER BY a.id_actividad DESC
+        `;
+
+        const result =
+            await pool.query(query);
 
         res.json(result.rows);
 
@@ -158,10 +217,7 @@ router.get('/', async (req, res) => {
         console.error(error);
 
         res.status(500).json({
-
-            message:
-                "Error cargando actividades"
-
+            message: "Error cargando actividades"
         });
 
     }

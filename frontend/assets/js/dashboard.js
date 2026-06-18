@@ -5,6 +5,14 @@ const usuario =
 
 const rol = usuario?.rol;
 
+if (usuario.rol !== "admin") {
+
+    document.querySelector(
+        ".notification-area"
+    ).style.display = "none";
+
+}
+
 
 // =========================
 // ELEMENTOS GENERALES
@@ -24,6 +32,26 @@ const rolUsuario =
 
 const dynamicContent =
     document.getElementById("dynamicContent");
+
+const btnNotificaciones =
+    document.getElementById(
+        "btnNotificaciones"
+    );
+
+const contadorNotificaciones =
+    document.getElementById(
+        "contadorNotificaciones"
+    );
+
+const panelNotificaciones =
+    document.getElementById(
+        "panelNotificaciones"
+    );
+
+const listaNotificaciones =
+    document.getElementById(
+        "listaNotificaciones"
+    );
 
 function activarMenu(idBoton) {
 
@@ -90,7 +118,7 @@ if (usuario) {
 }
 
 // =========================
-// ESTADISTICAS DASHBOARD
+// inicio ESTADISTICAS DASHBOARD
 // =========================
 
 async function cargarEstadisticas() {
@@ -131,6 +159,7 @@ async function cargarEstadisticas() {
 
     }
 
+
 }
 
 cargarEstadisticas();
@@ -170,7 +199,7 @@ if (btnInicio) {
 
             activarMenu("btnInicio");
 
-            dynamicContent.innerHTML = "";
+            mostrarInicio();
 
         }
     );
@@ -188,6 +217,28 @@ const btnInscripciones =
 
 const btnConfiguracion =
     document.getElementById("btnConfiguracion");
+
+const btnComentarios =
+    document.getElementById("btnComentarios");
+
+if (btnConfiguracion) {
+
+    btnConfiguracion.addEventListener(
+        "click",
+        (e) => {
+
+            e.preventDefault();
+
+            activarMenu(
+                "btnConfiguracion"
+            );
+
+            mostrarConfiguracion();
+
+        }
+    );
+
+}
 
 
 // =========================
@@ -313,15 +364,33 @@ if (btnInscripciones) {
 
             e.preventDefault();
 
-            modalIns.style.display =
-                "flex";
+            activarMenu("btnInscripciones");
+
+            cargarModuloInscripciones();
 
         }
     );
 
 }
 
+if (btnComentarios) {
 
+    btnComentarios.addEventListener(
+        "click",
+        (e) => {
+
+            e.preventDefault();
+
+            activarMenu(
+                "btnComentarios"
+            );
+
+            mostrarComentarios();
+
+        }
+    );
+
+}
 
 
 // =========================
@@ -2455,11 +2524,1793 @@ async function cambiarEstadoCampana(
 
 }
 
-
-
-
 // =========================
-// CARGA INICIAL
+// MODULO INSCRIPCIONES
 // =========================
 
-//cargarModuloUsuarios();
+async function cargarModuloInscripciones() {
+
+    try {
+
+        const responseInscripciones =
+            await fetch(
+                "http://localhost:3000/inscripciones"
+            );
+
+        const inscripciones =
+            await responseInscripciones.json();
+
+        const responseUsuarios =
+            await fetch(
+                "http://localhost:3000/usuarios"
+            );
+
+        const usuarios =
+            await responseUsuarios.json();
+
+        const responseActividades =
+            await fetch(
+                "http://localhost:3000/actividades"
+            );
+
+        const actividades =
+            await responseActividades.json();
+
+        const voluntarios =
+            usuarios.filter(u =>
+
+                u.rol === "voluntario"
+                &&
+                u.estado === "activo"
+
+            );
+
+        const actividadesDisponibles =
+            actividades.filter(a =>
+
+                a.estado !== "finalizada"
+                &&
+                a.cupos > 0
+
+            );
+
+        let filas = "";
+
+        inscripciones.forEach(i => {
+
+            filas += `
+
+                <tr>
+
+                    <td>${i.voluntario}</td>
+
+                    <td>${i.actividad}</td>
+
+                    <td>${i.campana || "-"}</td>
+
+                    <td>
+                        ${new Date(
+                            i.fecha_inscripcion
+                        ).toLocaleDateString()}
+                    </td>
+
+                    <td>
+
+                        <span class="${
+                            i.estado === "cancelada"
+                                ? "btn-cancelado"
+                                : "btn-inscripto"
+                        }">
+
+                            ${i.estado}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        ${
+
+                            i.estado === "cancelada"
+
+                            ?
+
+                            `
+
+                            <button
+                                class="btn-cancelado"
+                                disabled
+                            >
+                                Cancelada
+                            </button>
+
+                            `
+
+                            :
+
+                            `
+
+                            <button
+                                class="btn-estado"
+                                onclick="
+                                    cancelarInscripcion(
+                                        ${i.id_inscripcion}
+                                    )
+                                "
+                            >
+                                Cancelar
+                            </button>
+
+                            `
+
+                        }
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+        dynamicContent.innerHTML = `
+
+            <div class="usuarios-module">
+
+                <div class="module-header">
+
+                    <h2>
+                        Gestión de Inscripciones
+                    </h2>
+
+                </div>
+
+                <!-- FORM -->
+
+                <div class="form-section">
+
+                    <h3>
+                        Nueva Inscripción
+                    </h3>
+
+                    <div class="form-grid">
+
+                        <select id="selectVoluntario">
+
+                            <option value="">
+                                Seleccionar voluntario
+                            </option>
+
+                            ${voluntarios.map(v => `
+
+                                <option value="${v.id_usuario}">
+
+                                    ${v.nombre} ${v.apellido}
+
+                                </option>
+
+                            `).join("")}
+
+                        </select>
+
+                        <select id="selectActividad">
+
+                            <option value="">
+                                Seleccionar actividad
+                            </option>
+
+                            ${actividadesDisponibles.map(a => `
+
+                                <option value="${a.id_actividad}">
+
+                                    ${a.nombre}
+
+                                </option>
+
+                            `).join("")}
+
+                        </select>
+
+                    </div>
+
+                    <button
+                        class="btn-save"
+                        onclick="crearInscripcionAdmin()"
+                    >
+                        Inscribir Voluntario
+                    </button>
+
+                </div>
+
+                <!-- FILTROS -->
+
+                <div class="filter-group">
+
+                    <input
+                        type="text"
+                        id="buscarInscripcion"
+                        placeholder="Buscar voluntario..."
+                    >
+
+                    <select id="filtroEstadoInscripcion">
+
+                        <option value="todos">
+                            Todos los estados
+                        </option>
+
+                        <option value="activa">
+                            Activa
+                        </option>
+
+                        <option value="cancelada">
+                            Cancelada
+                        </option>
+
+                    </select>
+
+                    <select id="filtroActividadInscripcion">
+
+                        <option value="todos">
+                            Todas las actividades
+                        </option>
+
+                        ${[...new Set(
+                            inscripciones.map(
+                                i => i.actividad
+                            )
+                        )]
+
+                            .map(a => `
+
+                                <option value="${a}">
+                                    ${a}
+                                </option>
+
+                            `)
+
+                            .join("")}
+
+                    </select>
+
+                    <select id="filtroCampanaInscripcion">
+
+                        <option value="todos">
+                            Todas las campañas
+                        </option>
+
+                        ${[...new Set(
+                            inscripciones.map(
+                                i => i.campana
+                            )
+                        )]
+
+                            .map(c => `
+
+                                <option value="${c}">
+                                    ${c}
+                                </option>
+
+                            `)
+
+                            .join("")}
+
+                    </select>
+
+                </div>
+
+                                <!-- TABLA -->
+
+                                <div class="table-container">
+
+                                    <table class="usuarios-table">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>Voluntario</th>
+                                                <th>Actividad</th>
+                                                <th>Campaña</th>
+                                                <th>Fecha</th>
+                                                <th>Estado</th>
+                                                <th>Acciones</th>
+
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            ${filas}
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                        // =========================
+                        // EVENTOS FILTRO
+                        // =========================
+
+                        document.getElementById(
+                            "buscarInscripcion"
+                        ).addEventListener(
+                            "input",
+                            aplicarFiltrosInscripciones
+                        );
+
+                        document.getElementById(
+                            "filtroEstadoInscripcion"
+                        ).addEventListener(
+                            "change",
+                            aplicarFiltrosInscripciones
+                        );
+
+                        document.getElementById(
+                            "filtroActividadInscripcion"
+                        ).addEventListener(
+                            "change",
+                            aplicarFiltrosInscripciones
+                        );
+
+                        document.getElementById(
+                            "filtroCampanaInscripcion"
+                        ).addEventListener(
+                            "change",
+                            aplicarFiltrosInscripciones
+                        );
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        dynamicContent.innerHTML =
+                            `<p>Error cargando inscripciones</p>`;
+
+                    }
+
+                }
+
+
+function aplicarFiltrosInscripciones() {
+
+    const texto =
+
+        document.getElementById(
+            "buscarInscripcion"
+        )
+
+        .value
+        .toLowerCase();
+
+    const estado =
+
+        document.getElementById(
+            "filtroEstadoInscripcion"
+        )
+
+        .value;
+
+    const actividad =
+
+        document.getElementById(
+            "filtroActividadInscripcion"
+        )
+
+        .value;
+
+    const campana =
+
+        document.getElementById(
+            "filtroCampanaInscripcion"
+        )
+
+        .value;
+
+    const filas =
+        document.querySelectorAll(
+            ".usuarios-table tbody tr"
+        );
+
+    filas.forEach(fila => {
+
+        const voluntario =
+
+            fila.children[0]
+            .textContent
+            .toLowerCase();
+
+        const actividadFila =
+
+            fila.children[1]
+            .textContent;
+
+        const campanaFila =
+
+            fila.children[2]
+            .textContent;
+
+        const estadoFila =
+
+            fila.children[4]
+            .textContent
+            .toLowerCase();
+
+        const coincideTexto =
+
+            voluntario.includes(texto);
+
+        const coincideEstado =
+
+            estado === "todos"
+
+            ||
+
+            estadoFila.includes(estado);
+
+        const coincideActividad =
+
+            actividad === "todos"
+
+            ||
+
+            actividadFila === actividad;
+
+        const coincideCampana =
+
+            campana === "todos"
+
+            ||
+
+            campanaFila === campana;
+
+        fila.style.display =
+
+            coincideTexto
+            &&
+            coincideEstado
+            &&
+            coincideActividad
+            &&
+            coincideCampana
+
+                ? ""
+
+                : "none";
+
+    });
+
+}
+
+
+async function crearInscripcionAdmin() {
+
+    const id_voluntario =
+        document.getElementById(
+            "selectVoluntario"
+        ).value;
+
+    const id_actividad =
+        document.getElementById(
+            "selectActividad"
+        ).value;
+
+    if (!id_voluntario || !id_actividad) {
+
+        alert(
+            "Completa todos los campos"
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch(
+
+            "http://localhost:3000/inscripciones",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    id_usuario:
+                        id_voluntario,
+
+                    id_actividad
+
+                })
+
+            }
+
+        );
+
+        const data =
+            await response.json();
+
+        alert(data.message);
+
+        cargarModuloInscripciones();
+
+        cargarEstadisticas();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+async function cancelarInscripcion(id) {
+
+    try {
+
+        const response = await fetch(
+
+            `http://localhost:3000/inscripciones/${id}`,
+
+            {
+
+                method: "DELETE"
+
+            }
+
+        );
+
+        const data =
+            await response.json();
+
+        alert(data.message);
+
+        cargarModuloInscripciones();
+
+        cargarEstadisticas();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+// =========================
+// MODULO COMENTARIOS
+// =========================
+
+async function mostrarComentarios() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://localhost:3000/comentarios"
+            );
+
+        const comentarios =
+            await response.json();
+
+        let filas = "";
+
+        comentarios.forEach(c => {
+
+            filas += `
+
+                <tr>
+
+                    <td>
+                        ${c.usuario}
+                    </td>
+
+                    <td>
+                        ${c.actividad}
+                    </td>
+
+                    <td>
+                        ${c.comentario}
+                    </td>
+
+                    <td>
+                        ${new Date(
+                            c.fecha_comentario
+                        ).toLocaleDateString()}
+                    </td>
+
+                    <td>
+                        ${c.estado}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn-delete"
+                            onclick="eliminarComentario(
+                                ${c.id_comentario}
+                            )"
+                        >
+                            Eliminar
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+        dynamicContent.innerHTML = `
+
+            <div class="usuarios-module">
+
+                <div class="module-header">
+
+                    <h2>
+                        Gestión de Comentarios
+                    </h2>
+
+                </div>
+
+                <table class="usuarios-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Usuario</th>
+                            <th>Actividad</th>
+                            <th>Comentario</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${filas}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+
+        dynamicContent.innerHTML =
+
+            "<p>Error cargando comentarios</p>";
+
+    }
+
+}
+
+async function eliminarComentario(
+    idComentario
+) {
+
+    const confirmar = confirm(
+
+        "¿Deseas eliminar este comentario?"
+
+    );
+
+    if (!confirmar) return;
+
+    try {
+
+        const response =
+            await fetch(
+
+                `http://localhost:3000/comentarios/${idComentario}/eliminar`,
+
+                {
+                    method: "PUT"
+                }
+
+            );
+
+        const data =
+            await response.json();
+
+        alert(
+            data.message
+        );
+
+        mostrarComentarios();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Error eliminando comentario"
+        );
+
+    }
+
+}
+
+function mostrarInicio() {
+
+    dynamicContent.innerHTML = `
+
+        <div class="usuarios-module">
+
+
+            <div class="dashboard-grid">
+
+                <div class="dashboard-panel">
+
+                    <h3>
+                        📅 Próximas Actividades
+                    </h3>
+
+                    <div id="panelActividades">
+
+                        Cargando...
+
+                    </div>
+
+                </div>
+
+                <div class="dashboard-panel">
+
+                    <h3>
+                        📝 Últimas Inscripciones
+                    </h3>
+
+                    <div id="panelInscripciones">
+
+                        Cargando...
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="dashboard-panel">
+
+                <h3>
+                    💬 Comentarios Recientes
+                </h3>
+
+                <div id="panelComentarios">
+
+                    Cargando...
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    cargarEstadisticas();
+
+    cargarResumenDashboard();
+
+}
+
+function formatearFecha(fecha) {
+
+    if (!fecha) return "-";
+
+    return new Date(fecha)
+        .toLocaleDateString(
+            "es-PY",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }
+        );
+
+}
+
+async function cargarResumenDashboard() {
+
+    try {
+
+        // ACTIVIDADES
+
+        const actividadesResponse =
+            await fetch(
+                "http://localhost:3000/actividades"
+            );
+
+        const actividades =
+            await actividadesResponse.json();
+
+        const proximas =
+            actividades
+                .sort(
+
+                    (a, b) =>
+
+                        new Date(a.fecha)
+                        -
+                        new Date(b.fecha)
+
+                )
+                .slice(0, 5);
+
+        document.getElementById(
+            "panelActividades"
+        ).innerHTML = proximas.map(
+
+            actividad => `
+
+                <div class="mini-item">
+
+                    <strong>
+                        ${actividad.nombre}
+                    </strong>
+
+                    <span>
+                        ${formatearFecha(
+                            actividad.fecha
+                        )}
+                    </span>
+
+                </div>
+
+            `
+
+        ).join("");
+
+        console.log("Actividades:", actividades);
+
+        // INSCRIPCIONES
+
+        const inscripcionesResponse =
+            await fetch(
+                "http://localhost:3000/inscripciones"
+            );
+
+        const inscripciones =
+            await inscripcionesResponse.json();
+
+        const ultimasInscripciones =
+            inscripciones.slice(0, 5);
+
+        document.getElementById(
+            "panelInscripciones"
+        ).innerHTML = ultimasInscripciones.map(
+
+            inscripcion => `
+
+                <div class="mini-item">
+
+                    <strong>
+                        ${inscripcion.voluntario}
+                    </strong>
+
+                    <span>
+                        ${inscripcion.actividad}
+                    </span>
+
+                </div>
+
+            `
+
+        ).join("");
+
+        console.log("Inscripciones:", inscripciones);
+
+        // COMENTARIOS
+
+        const comentariosResponse =
+            await fetch(
+                "http://localhost:3000/comentarios"
+            );
+
+        const comentarios =
+            await comentariosResponse.json();
+
+        const recientes =
+            comentarios
+                .filter(
+                    c => c.estado === "activo"
+                )
+                .slice(0, 5);
+
+        document.getElementById(
+            "panelComentarios"
+        ).innerHTML = recientes.map(
+
+            comentario => `
+
+                <div class="comentario-item">
+
+                    <strong>
+                        ${comentario.usuario}
+                    </strong>
+
+                    <p>
+                        "${comentario.comentario}"
+                    </p>
+
+                </div>
+
+            `
+
+        ).join("");
+
+        console.log("Comentarios:", comentarios);
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+mostrarInicio();
+
+cargarNotificaciones();
+
+
+
+async function mostrarConfiguracion() {
+
+    activarMenu("btnConfiguracion");
+
+    const contenido =
+        document.getElementById(
+            "dynamicContent"
+        );
+
+    try {
+
+        const configResponse =
+            await fetch(
+                "http://localhost:3000/configuracion"
+            );
+
+        const config =
+            await configResponse.json();
+
+        const sistemaResponse =
+            await fetch(
+                "http://localhost:3000/configuracion/sistema"
+            );
+
+        const sistema =
+            await sistemaResponse.json();
+
+        contenido.innerHTML = `
+
+        <div class="configuracion-container">
+
+            <!-- INFORMACION -->
+
+            <div class="accordion-item">
+
+                <button class="accordion-header">
+                    🏢 Información Institucional
+                </button>
+
+                <div class="accordion-content">
+
+                    <div id="panelInfoInstitucional">
+                        Cargando...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SISTEMA -->
+
+            <div class="accordion-item">
+
+                <button class="accordion-header">
+                    ⚙️ Configuración Plataforma
+                </button>
+
+                <div class="accordion-content">
+
+                    <div id="panelConfigSistema">
+                        Cargando...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- REGLAS -->
+
+            <div class="accordion-item">
+
+                <button class="accordion-header">
+                    📋 Reglas Operativas
+                </button>
+
+                <div class="accordion-content">
+
+                    <div id="panelReglas">
+                        Cargando...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- REPORTES -->
+
+            <div class="accordion-item">
+
+                <button class="accordion-header">
+                    📊 Reportes
+                </button>
+
+                <div class="accordion-content">
+
+                    <div
+                        id="panelReportes"
+                        class="reportes-grid"
+                    >
+
+                        <button
+                            class="btn-estado"
+                            onclick="exportarUsuariosCSV()"
+                        >
+                            Usuarios CSV
+                        </button>
+
+                        <button
+                            class="btn-estado"
+                            onclick="exportarActividadesCSV()"
+                        >
+                            Actividades CSV
+                        </button>
+
+                        <button
+                            class="btn-estado"
+                            onclick="exportarInscripcionesCSV()"
+                        >
+                            Inscripciones CSV
+                        </button>
+
+                        <button
+                            class="btn-estado"
+                            onclick="exportarComentariosCSV()"
+                        >
+                            Comentarios CSV
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+        document
+            .querySelectorAll(
+                ".accordion-header"
+            )
+            .forEach(btn => {
+
+                btn.addEventListener(
+                    "click",
+                    () => {
+
+                        btn.parentElement
+                            .classList
+                            .toggle("active");
+
+                    }
+                );
+
+            });
+        // ABRIR EL PRIMER PANEL AUTOMÁTICAMENTE
+
+                document
+                    .querySelector(
+                        ".accordion-item"
+                    )
+                    .classList
+                    .add("active");
+
+        // PANEL INFORMACION
+
+        document.getElementById(
+            "panelInfoInstitucional"
+        ).innerHTML = `
+
+            <div class="config-grid">
+
+                <div>
+
+                    <label>Organización</label>
+
+                    <input
+                        id="configNombre"
+                        type="text"
+                        value="${config.nombre_organizacion || ''}"
+                    >
+
+                </div>
+
+                <div>
+
+                    <label>Email</label>
+
+                    <input
+                        id="configEmail"
+                        type="email"
+                        value="${config.email_contacto || ''}"
+                    >
+
+                </div>
+
+                <div>
+
+                    <label>Teléfono</label>
+
+                    <input
+                        id="configTelefono"
+                        type="text"
+                        value="${config.telefono || ''}"
+                    >
+
+                </div>
+
+                <div>
+
+                    <label>Dirección</label>
+
+                    <textarea
+                        id="configDireccion"
+                    >${config.direccion || ''}</textarea>
+
+                </div>
+
+            </div>
+
+            <div style="margin-top:20px;">
+
+                <button
+                    id="btnGuardarConfig"
+                    class="btn-estado"
+                    onclick="guardarConfiguracionGeneral()"
+                >
+                    Guardar Cambios
+                </button>
+
+            </div>
+
+        `;
+
+
+        // PANEL SISTEMA
+
+        document.getElementById(
+            "panelConfigSistema"
+        ).innerHTML = `
+
+            <div class="config-checks">
+
+                <label>
+
+                    <input
+                        id="permitirRegistro"
+                        type="checkbox"
+                        ${sistema.permitir_registro ? "checked" : ""}
+                    >
+
+                    Permitir registros
+
+                </label>
+
+                <label>
+
+                    <input
+                        id="permitirComentarios"
+                        type="checkbox"
+                        ${sistema.permitir_comentarios ? "checked" : ""}
+                    >
+
+                    Permitir comentarios
+
+                </label>
+
+                <label>
+
+                    <input
+                        id="permitirReinscripciones"
+                        type="checkbox"
+                        ${sistema.permitir_reinscripciones ? "checked" : ""}
+                    >
+
+                    Permitir reinscripciones
+
+                </label>
+
+                <label>
+
+                    <input
+                        id="mostrarFinalizadas"
+                        type="checkbox"
+                        ${sistema.mostrar_finalizadas ? "checked" : ""}
+                    >
+
+                    Mostrar finalizadas
+
+                </label>
+
+            </div>
+
+            <div style="margin-top:20px;">
+
+                <button
+                    id="btnGuardarSistema"
+                    class="btn-estado"
+                    onclick="guardarConfigSistema()"
+                >
+                    Guardar Cambios
+                </button>
+
+            </div>
+
+        `;
+
+
+        // PANEL REGLAS
+
+        document.getElementById(
+            "panelReglas"
+        ).innerHTML = `
+
+            <div class="config-grid">
+
+                <div>
+
+                    <label>
+                        Días cancelación
+                    </label>
+
+                    <input
+                        id="diasCancelacion"
+                        type="number"
+                        value="${sistema.dias_cancelacion}"
+                    >
+
+                </div>
+
+                <div>
+
+                    <label>
+                        Cupos por defecto
+                    </label>
+
+                    <input
+                        id="cuposDefault"
+                        type="number"
+                        value="${sistema.cupos_default}"
+                    >
+
+                </div>
+
+            </div>
+
+            <div style="margin-top:20px;">
+
+                <button
+                    class="btn-estado"
+                    onclick="guardarConfigSistema()"
+                >
+                    Guardar Reglas
+                </button>
+
+            </div>
+
+        `;
+                } catch (error) {
+
+        console.error(error);
+
+        contenido.innerHTML =
+            "Error cargando configuración";
+
+    }
+
+}
+    
+
+async function guardarConfiguracion() {
+
+    await fetch(
+
+        "http://localhost:3000/configuracion",
+
+        {
+
+            method: "PUT",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+                nombre_organizacion:
+                    document.getElementById(
+                        "nombreOrganizacion"
+                    ).value,
+
+                email_contacto:
+                    document.getElementById(
+                        "emailContacto"
+                    ).value,
+
+                telefono:
+                    document.getElementById(
+                        "telefonoContacto"
+                    ).value,
+
+                direccion:
+                    document.getElementById(
+                        "direccionContacto"
+                    ).value
+
+            })
+
+        }
+
+    );
+
+    alert(
+        "Configuración guardada"
+    );
+
+}
+
+async function guardarConfigSistema() {
+
+    console.log("Guardar sistema");
+
+        console.log(
+            document.getElementById(
+                "permitirComentarios"
+            ).checked
+        );
+
+    const boton =
+        document.getElementById(
+            "btnGuardarSistema"
+        );
+
+    try {
+
+        boton.disabled = true;
+
+        boton.innerText =
+            "Guardando...";
+
+        await fetch(
+
+            "http://localhost:3000/configuracion/sistema",
+
+            {
+
+                method: "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    permitir_registro:
+                        document.getElementById(
+                            "permitirRegistro"
+                        ).checked,
+
+                    permitir_comentarios:
+                        document.getElementById(
+                            "permitirComentarios"
+                        ).checked,
+
+                    permitir_reinscripciones:
+                        document.getElementById(
+                            "permitirReinscripciones"
+                        ).checked,
+
+                    mostrar_finalizadas:
+                        document.getElementById(
+                            "mostrarFinalizadas"
+                        ).checked,
+
+                    dias_cancelacion:
+                        parseInt(
+
+                            document.getElementById(
+                                "diasCancelacion"
+                            ).value
+
+                        ),
+
+                    cupos_default:
+                        parseInt(
+
+                            document.getElementById(
+                                "cuposDefault"
+                            ).value
+
+                        )
+
+                })
+
+            }
+
+        );
+
+        boton.innerHTML =
+            "✓ Guardado";
+
+        boton.classList.add(
+            "btn-success"
+        );
+
+        setTimeout(() => {
+
+            boton.innerText =
+                "Guardar Cambios";
+
+            boton.disabled = false;
+
+            boton.classList.remove(
+                "btn-success"
+            );
+
+        }, 2000);
+
+    } catch (error) {
+
+        console.error(error);
+
+        boton.innerText =
+            "Error";
+
+    }
+
+}
+
+async function guardarConfiguracionGeneral() {
+
+    const boton =
+    document.getElementById(
+        "btnGuardarConfig"
+    );
+
+    boton.disabled = true;
+
+    boton.innerText =
+        "Guardando...";
+
+    try {
+
+        const response =
+            await fetch(
+
+                "http://localhost:3000/configuracion",
+
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        nombre_organizacion:
+                            document.getElementById(
+                                "configNombre"
+                            ).value,
+
+                        email_contacto:
+                            document.getElementById(
+                                "configEmail"
+                            ).value,
+
+                        telefono:
+                            document.getElementById(
+                                "configTelefono"
+                            ).value,
+
+                        direccion:
+                            document.getElementById(
+                                "configDireccion"
+                            ).value
+
+                    })
+
+                }
+
+            );
+
+        const data =
+            await response.json();
+
+        boton.innerHTML =
+            "✓ Guardado";
+
+        boton.classList.add(
+            "btn-success"
+        );
+
+        setTimeout(() => {
+
+            boton.innerText =
+                "Guardar Cambios";
+
+            boton.disabled = false;
+
+            boton.classList.remove(
+                "btn-success"
+            );
+
+        }, 7000);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Error guardando configuración"
+        );
+
+    }
+
+}
+
+function exportarUsuariosCSV() {
+
+    window.open(
+
+        "http://localhost:3000/reportes/usuarios",
+
+        "_blank"
+
+    );
+
+}
+
+function exportarActividadesCSV() {
+
+    window.open(
+
+        "http://localhost:3000/reportes/actividades",
+
+        "_blank"
+
+    );
+
+}
+
+function exportarInscripcionesCSV() {
+
+    window.open(
+
+        "http://localhost:3000/reportes/inscripciones",
+
+        "_blank"
+
+    );
+
+}
+
+function exportarComentariosCSV() {
+
+    window.open(
+
+        "http://localhost:3000/reportes/comentarios",
+
+        "_blank"
+
+    );
+
+}
+
+async function cargarNotificaciones() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://localhost:3000/solicitudes-reactivacion"
+            );
+
+        const solicitudes =
+            await response.json();
+
+        contadorNotificaciones.textContent =
+            solicitudes.length;
+
+        let html = "";
+
+        solicitudes.forEach(s => {
+
+            html += `
+
+                <div
+                    style="
+                        border-bottom:1px solid #eee;
+                        padding:10px 0;
+                    "
+                >
+
+                    <strong>
+
+                        ${s.nombre}
+                        ${s.apellido}
+
+                    </strong>
+
+                    <br>
+
+                    @${s.username}
+
+                    <br><br>
+
+                    <button
+                        onclick="
+                            aprobarSolicitud(
+                                ${s.id_solicitud},
+                                ${s.id_usuario}
+                            )
+                        "
+                    >
+                        Aprobar
+                    </button>
+
+                    <button
+                        onclick="
+                            rechazarSolicitud(
+                                ${s.id_solicitud}
+                            )
+                        "
+                    >
+                        Rechazar
+                    </button>
+
+                </div>
+
+            `;
+
+        });
+
+        listaNotificaciones.innerHTML =
+            html;
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+btnNotificaciones.addEventListener(
+    "click",
+    () => {
+
+        panelNotificaciones
+            .classList
+            .toggle("hidden");
+
+    }
+);
+
+
+async function aprobarSolicitud(idSolicitud) {
+
+    try {
+
+        const response =
+            await fetch(
+
+                `http://localhost:3000/solicitudes-reactivacion/${idSolicitud}/aprobar`,
+
+                {
+                    method: "PUT"
+                }
+
+            );
+
+        const data =
+            await response.json();
+
+        alert(data.message);
+
+        cargarNotificaciones();
+
+        cargarModuloUsuarios();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+async function rechazarSolicitud(idSolicitud) {
+
+    try {
+
+        const response =
+            await fetch(
+
+                `http://localhost:3000/solicitudes-reactivacion/${idSolicitud}/rechazar`,
+
+                {
+                    method: "PUT"
+                }
+
+            );
+
+        const data =
+            await response.json();
+
+        alert(data.message);
+
+        cargarNotificaciones();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+setInterval(() => {
+
+    cargarNotificaciones();
+
+}, 30000);

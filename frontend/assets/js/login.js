@@ -101,8 +101,46 @@ form.addEventListener("submit", async (e) => {
 
 async function solicitarActivacion() {
 
-    alert(
-        "Solicitud enviada correctamente"
-    );
+    const login =
+        document.getElementById("login")
+        .value
+        .trim();
+
+    try {
+
+        const response =
+            await fetch(
+
+                "http://localhost:3000/solicitar-reactivacion",
+
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        login
+                    })
+                }
+
+            );
+
+        const data =
+            await response.json();
+
+        alert(data.message);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Error enviando solicitud"
+        );
+
+    }
 
 }

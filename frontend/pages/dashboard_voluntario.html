@@ -2,15 +2,155 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Dashboard Voluntario</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dashboard Voluntario
+    </title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/dashboard.css"
+    >
+
 </head>
 
 <body>
 
-    <h1>Bienvenido Voluntario</h1>
+    <!-- TOPBAR -->
 
-    <p>Dashboard en construcción 🚀</p>
+    <header class="topbar">
+
+        <div class="logo-area">
+
+            <img
+                src="../assets/img/logo.png"
+                alt="Logo"
+            >
+
+            <h2>
+                VoluntApp
+            </h2>
+
+        </div>
+
+        <div class="user-area">
+
+            <div class="user-box">
+
+                <img
+                    src="../assets/img/boton.png"
+                    alt="Voluntario"
+                >
+
+                <strong id="nombreVoluntario">
+                    Voluntario
+                </strong>
+
+            </div>
+
+            <div class="role-box">
+                Voluntario
+            </div>
+
+            <button
+                onclick="cerrarSesion()"
+                class="logout-btn"
+            >
+                Cerrar Sesión
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- CONTENEDOR -->
+
+    <div class="container">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-menu">
+
+                <a
+                    id="menuInicio"
+                    href="#"
+                    class="active"
+                    onclick="mostrarInicioVoluntario()"
+                >
+                    Inicio
+                </a>
+
+                <a
+                    id="menuActividades"
+                    href="#"
+                    onclick="mostrarActividadesDisponibles()"
+                >
+                    Actividades Disponibles
+                </a>
+
+                <a
+                    id="menuInscripciones"
+                    href="#"
+                    onclick="mostrarMisInscripciones()"
+                >
+                    Mis Inscripciones
+                </a>
+
+                <a
+                    id="menuPerfil"
+                    href="#"
+                    onclick="mostrarPerfil()"
+                >
+                    Perfil
+                </a>
+
+            </div>
+            
+
+        </aside>
+
+        <!-- CONTENIDO -->
+
+        <main class="main-content">
+
+            <section class="welcome">
+
+                <h1 id="bienvenidaVoluntario">
+                    ¡Bienvenido!
+                </h1>
+
+                <p>
+                    Aquí puedes ver actividades e inscribirte.
+                </p>
+
+            </section>
+
+            <section
+                id="contenidoVoluntario"
+                class="usuarios-module"
+            >
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../assets/js/dashboard_voluntario.js"></script>
 
 </body>
 
